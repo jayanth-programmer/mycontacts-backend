@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "build": "npm install && cd mycontacts-frontend && npm install && npm run build"
+    "build": "npm install --include=dev && npm install --prefix mycontacts-frontend --include=dev && npm run build --prefix mycontacts-frontend"
   },
   "author": "jayanth",
   "license": "MIT",
