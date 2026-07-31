@@ -38,8 +38,11 @@ app.use("/api/users", require("./routes/userRoutes"));
 const frontendDistPath = path.join(__dirname, "mycontacts-frontend", "dist");
 if (process.env.NODE_ENV === "production" || fs.existsSync(frontendDistPath)) {
   app.use(express.static(frontendDistPath));
-  app.get("*", (req, res) => {
-    res.sendFile(path.resolve(frontendDistPath, "index.html"));
+  app.use((req, res, next) => {
+    if (req.method === "GET" && !req.path.startsWith("/api")) {
+      return res.sendFile(path.resolve(frontendDistPath, "index.html"));
+    }
+    next();
   });
 }
 
