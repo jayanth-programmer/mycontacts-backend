@@ -34,17 +34,28 @@ app.use(express.json());
 app.use("/api/contacts", require("./routes/contactRoutes"));
 app.use("/api/users", require("./routes/userRoutes"));
 
-// Serve static frontend assets in production or if build directory exists
+// Serve static frontend assets
 const frontendDistPath = path.join(__dirname, "mycontacts-frontend", "dist");
-if (process.env.NODE_ENV === "production" || fs.existsSync(frontendDistPath)) {
+
+if (fs.existsSync(frontendDistPath)) {
   app.use(express.static(frontendDistPath));
-  app.use((req, res, next) => {
-    if (req.method === "GET" && !req.path.startsWith("/api")) {
-      return res.sendFile(path.resolve(frontendDistPath, "index.html"));
-    }
-    next();
-  });
 }
+
+// SPA fallback for React client-side routing
+app.use((req, res, next) => {
+  if (
+    req.method === "GET" &&
+    !req.path.startsWith("/api") &&
+    !path.extname(req.path)
+  ) {
+    const indexPath = path.resolve(frontendDistPath, "index.html");
+    if (fs.existsSync(indexPath)) {
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      return res.sendFile(indexPath);
+    }
+  }
+  next();
+});
 
 // Error handling middleware
 app.use(errorhandler);
