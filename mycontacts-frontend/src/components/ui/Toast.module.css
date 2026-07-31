@@ -1,0 +1,115 @@
+.toastContainer {
+  position: fixed;
+  top: var(--spacing-lg);
+  right: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  z-index: var(--z-toast);
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-base);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  min-width: 320px;
+  max-width: 420px;
+  pointer-events: all;
+  animation: toastSlideIn 0.3s ease;
+  backdrop-filter: blur(12px);
+}
+
+.toast.exiting {
+  animation: toastSlideOut 0.3s ease forwards;
+}
+
+.icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+  font-size: 1.1rem;
+}
+
+.content {
+  flex: 1;
+}
+
+.message {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+  line-height: var(--line-height-normal);
+}
+
+.closeBtn {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  transition: all var(--transition-fast);
+}
+
+.closeBtn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+/* ── Type colors ── */
+.success .icon { color: var(--color-success); }
+.success { border-left: 3px solid var(--color-success); }
+
+.error .icon { color: var(--color-error); }
+.error { border-left: 3px solid var(--color-error); }
+
+.warning .icon { color: var(--color-warning); }
+.warning { border-left: 3px solid var(--color-warning); }
+
+.info .icon { color: var(--color-info); }
+.info { border-left: 3px solid var(--color-info); }
+
+/* ── Progress bar ── */
+.progressBar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  animation: progressShrink linear forwards;
+}
+
+.success .progressBar { background: var(--color-success); }
+.error .progressBar { background: var(--color-error); }
+.warning .progressBar { background: var(--color-warning); }
+.info .progressBar { background: var(--color-info); }
+
+@keyframes progressShrink {
+  from { width: 100%; }
+  to { width: 0%; }
+}
+
+@media (max-width: 480px) {
+  .toastContainer {
+    left: var(--spacing-sm);
+    right: var(--spacing-sm);
+    top: var(--spacing-sm);
+  }
+  .toast {
+    min-width: auto;
+    max-width: none;
+  }
+}

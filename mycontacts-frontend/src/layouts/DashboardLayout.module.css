@@ -1,0 +1,27 @@
+.layout {
+  min-height: 100vh;
+  background: var(--bg-primary);
+}
+
+.main {
+  margin-left: var(--sidebar-width);
+  padding-top: var(--topnav-height);
+  min-height: 100vh;
+  transition: margin-left var(--transition-slow);
+}
+
+.content {
+  padding: var(--spacing-lg);
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  animation: fadeIn 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .main {
+    margin-left: 0;
+  }
+  .content {
+    padding: var(--spacing-base);
+  }
+}

@@ -1,0 +1,35 @@
+.spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ring {
+  border-radius: 50%;
+  border: 2.5px solid var(--border-primary);
+  border-top-color: var(--accent-primary);
+  animation: spin 0.7s linear infinite;
+}
+
+.sm .ring {
+  width: 16px;
+  height: 16px;
+  border-width: 2px;
+}
+
+.md .ring {
+  width: 24px;
+  height: 24px;
+}
+
+.lg .ring {
+  width: 40px;
+  height: 40px;
+  border-width: 3px;
+}
+
+.xl .ring {
+  width: 56px;
+  height: 56px;
+  border-width: 3.5px;
+}
