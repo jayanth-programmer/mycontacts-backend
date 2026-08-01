@@ -19,7 +19,13 @@ export const AuthProvider = ({ children }) => {
       return;
     }
     try {
-      const userData = await authService.getCurrentUser();
+      // Add a timeout so the app doesn't hang forever on Render cold starts
+      const userData = await Promise.race([
+        authService.getCurrentUser(),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error("Request timeout")), 10000)
+        ),
+      ]);
       setUser(userData);
     } catch (err) {
       removeToken();
