@@ -4,62 +4,62 @@ const path = require("path");
 const fs = require("fs");
 const connectDb = require("./config/dbConnection");
 const errorhandler = require("./middleware/errorHandler");
-const dotenv = require("dotenv").config();
+require("dotenv").config();
 
 connectDb();
 const app = express();
-
 const port = process.env.PORT || 5000;
 
-const allowedOrigins = [
-  process.env.FRONTEND_URL,
-  "http://localhost:5173",
-  "http://localhost:3000",
-].filter(Boolean);
-
+// CORS — allow all in dev, restrict in production
 app.use(
   cors({
-    origin: function (origin, callback) {
-      // allow requests with no origin (like mobile apps, curl, or postman)
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== "production") {
-        return callback(null, true);
-      }
-      return callback(new Error("CORS policy error: Origin not allowed"), false);
-    },
+    origin: process.env.NODE_ENV === "production"
+      ? [process.env.FRONTEND_URL].filter(Boolean)
+      : true,
     credentials: true,
   })
 );
+
 app.use(express.json());
+
+// API routes
 app.use("/api/contacts", require("./routes/contactRoutes"));
 app.use("/api/users", require("./routes/userRoutes"));
 
-// Serve static frontend assets
+// Serve React production build
 const frontendDistPath = path.join(__dirname, "mycontacts-frontend", "dist");
+const indexHtmlPath = path.join(frontendDistPath, "index.html");
 
 if (fs.existsSync(frontendDistPath)) {
-  app.use(express.static(frontendDistPath));
-}
+  console.log("Serving frontend from:", frontendDistPath);
 
-// SPA fallback for React client-side routing
-app.use((req, res, next) => {
-  if (
-    req.method === "GET" &&
-    !req.path.startsWith("/api") &&
-    !path.extname(req.path)
-  ) {
-    const indexPath = path.resolve(frontendDistPath, "index.html");
-    if (fs.existsSync(indexPath)) {
+  // Serve static assets (JS, CSS, images)
+  app.use(
+    express.static(frontendDistPath, {
+      maxAge: "1d",
+      index: false, // disable auto index.html serving — we handle it manually
+    })
+  );
+
+  // SPA fallback — serve index.html for all non-API GET routes
+  app.get("*splat", (req, res) => {
+    if (fs.existsSync(indexHtmlPath)) {
       res.setHeader("Content-Type", "text/html; charset=utf-8");
-      return res.sendFile(indexPath);
+      res.sendFile(indexHtmlPath);
+    } else {
+      res.status(404).send("Frontend build not found.");
     }
-  }
-  next();
-});
+  });
+} else {
+  console.log("No frontend dist folder found, running API-only mode.");
+  app.get("/", (req, res) => {
+    res.json({ message: "MyContacts API is running." });
+  });
+}
 
 // Error handling middleware
 app.use(errorhandler);
 
 app.listen(port, () => {
-  console.log(`server running on port ${port}`);
+  console.log(`Server running on port ${port}`);
 });
